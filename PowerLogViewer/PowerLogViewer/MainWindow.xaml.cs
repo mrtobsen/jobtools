@@ -1,17 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Microsoft.Win32;
+using PowerLogViewer.Controller;
+using PowerLogViewer.EventArgsClasses;
 
 namespace PowerLogViewer
 {
@@ -20,9 +10,48 @@ namespace PowerLogViewer
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private ApplicationCacheController _AppCache;
+
 		public MainWindow()
 		{
 			InitializeComponent();
+		}
+
+
+		private void ImportData()
+		{
+
+			FileImportController im = new FileImportController();
+			im.OpenFileDialog += OnOpenFileDialog;
+
+			var tempList = im.ImportRawLogfiles();
+
+			if (tempList == null)
+			{
+				return;
+			}
+			_AppCache = new ApplicationCacheController( tempList );
+			dgLogentries.ItemsSource = _AppCache.FullLogEntryList;
+
+		}
+
+		// Opens file dialog when needed for Import (no implementation of Winforms into class)
+		private void OnOpenFileDialog(object sender, ImportFileDialogEventArgs e)
+		{
+			FileImportController im =  (FileImportController)sender;
+			OpenFileDialog dialog =  new OpenFileDialog();
+			dialog.Filter = e.Filter;
+			dialog.Multiselect = e.Multiselect;
+
+			if (dialog.ShowDialog() != false)
+			{
+				im.Files = dialog.FileNames;
+			}
+		}
+
+		private void miImportFile_Click(object sender, RoutedEventArgs e)
+		{
+			ImportData();
 		}
 	}
 }
