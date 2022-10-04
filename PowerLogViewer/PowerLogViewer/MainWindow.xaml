@@ -4,9 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"      
         xmlns:local="clr-namespace:PowerLogViewer"
+        xmlns:conv="clr-namespace:PowerLogViewer.Converters"
         mc:Ignorable="d"
         FontFamily="Consolas"
-        Title="MainWindow" Height="1080" Width="1920">
+        Title="PowerLogViewer by Tobi :-)" Height="1080" Width="1920">
+    <Window.Resources>
+        <conv:RemoveNewLineConverter x:Key="removeNewLineConverter" />
+    </Window.Resources>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"/>
@@ -14,7 +19,6 @@
             <RowDefinition Height="3"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
 
         <Menu Grid.Row="0">
             <MenuItem Header="File">
@@ -38,18 +42,18 @@
         </Grid>
 
         <GridSplitter Grid.Row="2" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Stretch"  />
+        
         <DataGrid Grid.Row="3" x:Name="dgLogentries"  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" AutoGenerateColumns="False">
             <DataGrid.RowDetailsTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal" >
                         <StackPanel>
                             <TextBlock Text="Message" FontWeight="Bold"  Margin="0,9,0,0"  />
-                            <Separator/>
-                            <TextBlock Text="{Binding Message}"  TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                            
+                            <Separator/>                           
+                            <TextBox Text="{Binding Message, Mode=OneWay}" Background="Transparent"  TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
                             <TextBlock Text="Attributes" FontWeight="Bold"  Margin="0,9,0,0"  />
                             <Separator/>
-                            <TextBlock Text="{Binding Attributes}"  TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />                            
+                            <TextBox Text="{Binding Attributes, Mode=OneWay}" Background="Transparent"  TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />                            
                         </StackPanel>
                     </StackPanel>
                 </DataTemplate>
@@ -69,8 +73,7 @@
                             </Style.Triggers>
                         </Style>
                     </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>  
-                
+                </DataGridTextColumn>                  
                 <DataGridTextColumn Binding="{Binding Category}" Header="Category" Width="35" />
                 <DataGridTextColumn Binding="{Binding Component}" Header="Component" Width="35" />
                 <DataGridTextColumn Binding="{Binding TimeStamp, StringFormat=\{0:dd.MM.yy HH:mm:ss\}}" Header="Time" Width="99" />
@@ -78,9 +81,8 @@
                 <DataGridTextColumn Binding="{Binding Process}" Header="Process" Width="50" />
                 <DataGridTextColumn Binding="{Binding Session}" Header="Session" Width="35" />
                 <DataGridTextColumn Binding="{Binding Message}" Header="Message" Width="*" />
-                <DataGridTextColumn Binding="{Binding Attributes}" Header="Attributes" Width="700" />
+                <DataGridTextColumn Binding="{Binding Attributes, Converter={StaticResource removeNewLineConverter}}" Header="Attributes" Width="700" />
                 <DataGridTextColumn Binding="{Binding FileName}" Header="Filename" Width="85" Visibility="Hidden" />
-
             </DataGrid.Columns>
         </DataGrid>
 

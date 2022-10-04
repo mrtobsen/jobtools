@@ -175,14 +175,12 @@ namespace PowerLogViewer.Controller
 						if ((reader.NodeType == XmlNodeType.Element) && (reader.Name != "attributes"))
 						{
 							//temp.Attributes += reader.Name + ": " + reader.ReadString() ;
-							if (true)
+
+							if (!String.IsNullOrEmpty( temp.Attributes ))
 							{
-								if (!String.IsNullOrEmpty( temp.Attributes ))
-								{
-									temp.Attributes += Environment.NewLine;
-								}
-								temp.Attributes = reader.Name + ": " + reader.ReadString();
+								temp.Attributes += Environment.NewLine;
 							}
+							temp.Attributes = temp.Attributes + reader.Name + ": " + reader.ReadString();
 
 						}
 					}

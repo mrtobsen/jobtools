@@ -2,7 +2,6 @@
 using Microsoft.Win32;
 using PowerLogViewer.Controller;
 using PowerLogViewer.EventArgsClasses;
-
 namespace PowerLogViewer
 {
 	/// <summary>
