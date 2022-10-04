@@ -53,5 +53,17 @@ namespace PowerLogViewer
 		{
 			ImportData();
 		}
+
+		private void btDoSearch_Click(object sender, RoutedEventArgs e)
+		{
+			dgLogentries.ItemsSource = _AppCache.GetEntriesByDynamicLinqQuery( txtSearch.Text );
+		}
+
+		private void btResetSearch_Click(object sender, RoutedEventArgs e)
+		{
+			dgLogentries.ItemsSource = _AppCache.GetCompleteEntryList();
+		}
+
+	
 	}
 }
