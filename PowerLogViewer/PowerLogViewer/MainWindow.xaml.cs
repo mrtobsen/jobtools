@@ -64,6 +64,6 @@ namespace PowerLogViewer
 			dgLogentries.ItemsSource = _AppCache.GetCompleteEntryList();
 		}
 
-	
+
 	}
 }

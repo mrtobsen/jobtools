@@ -33,7 +33,5 @@ namespace PowerLogViewer.Controller
 		{
 			return new ObservableCollection<LogEntry>( _CompleteLogList );
 		}
-
-
 	}
 }

@@ -38,7 +38,51 @@
         </Grid>
 
         <GridSplitter Grid.Row="2" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Stretch"  />
-        <DataGrid Grid.Row="3" x:Name="dgLogentries"  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False"/>
+        <DataGrid Grid.Row="3" x:Name="dgLogentries"  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" AutoGenerateColumns="False">
+            <DataGrid.RowDetailsTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal" >
+                        <StackPanel>
+                            <TextBlock Text="Message" FontWeight="Bold"  Margin="0,9,0,0"  />
+                            <Separator/>
+                            <TextBlock Text="{Binding Message}"  TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            
+                            <TextBlock Text="Attributes" FontWeight="Bold"  Margin="0,9,0,0"  />
+                            <Separator/>
+                            <TextBlock Text="{Binding Attributes}"  TextWrapping="Wrap" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />                            
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </DataGrid.RowDetailsTemplate>
+            <DataGrid.Columns>
+                <DataGridTextColumn Binding="{Binding RunNumber}" Header="#" Width="15" />
+                <DataGridTextColumn x:Name="Level" Binding="{Binding Level}" Header="Level">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Style.Triggers>
+                                <Trigger Property="Text" Value="error">
+                                    <Setter Property="Background" Value="Red"/>
+                                </Trigger>
+                                <Trigger Property="Text" Value="warning">
+                                    <Setter Property="Background" Value="Yellow"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                </DataGridTextColumn>  
+                
+                <DataGridTextColumn Binding="{Binding Category}" Header="Category" Width="35" />
+                <DataGridTextColumn Binding="{Binding Component}" Header="Component" Width="35" />
+                <DataGridTextColumn Binding="{Binding TimeStamp, StringFormat=\{0:dd.MM.yy HH:mm:ss\}}" Header="Time" Width="99" />
+                <DataGridTextColumn Binding="{Binding Thread}" Header="Thread" Width="50" />
+                <DataGridTextColumn Binding="{Binding Process}" Header="Process" Width="50" />
+                <DataGridTextColumn Binding="{Binding Session}" Header="Session" Width="35" />
+                <DataGridTextColumn Binding="{Binding Message}" Header="Message" Width="*" />
+                <DataGridTextColumn Binding="{Binding Attributes}" Header="Attributes" Width="700" />
+                <DataGridTextColumn Binding="{Binding FileName}" Header="Filename" Width="85" Visibility="Hidden" />
+
+            </DataGrid.Columns>
+        </DataGrid>
 
     </Grid>
 </Window>
