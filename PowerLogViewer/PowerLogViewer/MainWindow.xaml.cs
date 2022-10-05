@@ -16,10 +16,8 @@ namespace PowerLogViewer
 			InitializeComponent();
 		}
 
-
 		private void ImportData()
 		{
-
 			FileImportController im = new FileImportController();
 			im.OpenFileDialog += OnOpenFileDialog;
 
@@ -31,7 +29,6 @@ namespace PowerLogViewer
 			}
 			_AppCache = new ApplicationCacheController( tempList );
 			dgLogentries.ItemsSource = _AppCache.FullLogEntryList;
-
 		}
 
 		// Opens file dialog when needed for Import (no implementation of Winforms into class)
@@ -62,7 +59,5 @@ namespace PowerLogViewer
 		{
 			dgLogentries.ItemsSource = _AppCache.GetCompleteEntryList();
 		}
-
-
 	}
 }
