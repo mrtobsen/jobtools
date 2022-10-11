@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PowerLogViewer"
         mc:Ignorable="d"
-        Title="Column configuration" Height="280" Width="200" Closing="Window_Closing" ResizeMode="NoResize">
+        Title="Column configuration" Closing="Window_Closing" ResizeMode="NoResize"
+        SizeToContent="WidthAndHeight">
     <Grid>
-        <StackPanel>
-            <CheckBox  Margin="11,0,0,3" x:Name="ckbxCheckUncheckAll" Content="Check/Uncheck all" Checked="ckbxCheckUncheckAll_Checked" Unchecked="ckbxCheckUncheckAll_Checked"/>
-            <ListBox Margin="4,0,4,0" x:Name="lbxColumnVisibility" >
+        <StackPanel HorizontalAlignment="Stretch" MinWidth="190" VerticalAlignment="Stretch">
+            <CheckBox Grid.Row="0"  Margin="11,0,5,3" x:Name="ckbxCheckUncheckAll" Content="Check/Uncheck all" Checked="ckbxCheckUncheckAll_Checked" Unchecked="ckbxCheckUncheckAll_Checked"/>
+            <ListBox Grid.Row="1" Margin="4,0,4,0" x:Name="lbxColumnVisibility" >
                 <!-- Because CheckBox indicates selection, hide standard ListBox -->
                 <!-- selection behavior -->
                 <ListBox.ItemContainerStyle>
@@ -26,7 +27,7 @@
 
             </ListBox>
            
-                <Button Margin="4" Width="80" x:Name="btSave" HorizontalAlignment="Right" Content="Save" Click="btSave_Click"  />                
+                <Button  Grid.Row="2" Margin="4" Width="80" x:Name="btSave" HorizontalAlignment="Right" Content="Save" Click="btSave_Click"  />                
            
         </StackPanel>
     </Grid>
