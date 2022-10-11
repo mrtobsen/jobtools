@@ -10,6 +10,12 @@ namespace PowerLogViewer.BusinessObjects
 		public DateTime TimeStamp { get; set; }
 		public int Thread { get; set; }
 		public int Process { get; set; }
+		public string ProcessThread
+		{ get
+			{
+				return String.Concat( Process.ToString(), "-", Thread.ToString() );
+			}  
+		}
 		public string Session { get; set; }
 		public string Message { get; set; }
 		public string Attributes { get; set; }

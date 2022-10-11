@@ -58,6 +58,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="DatagridColumnConfig.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -66,10 +70,14 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BusinessObjects\DatagridColumnConfigSettings.cs" />
     <Compile Include="BusinessObjects\LogEntry.cs" />
     <Compile Include="Controller\ApplicationCacheController.cs" />
     <Compile Include="Controller\FileImportController.cs" />
     <Compile Include="Converters\RemoveNewLineConverter.cs" />
+    <Compile Include="DatagridColumnConfig.xaml.cs">
+      <DependentUpon>DatagridColumnConfig.xaml</DependentUpon>
+    </Compile>
     <Compile Include="EventArgsClasses\ImportFileDialogEventArgs.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
