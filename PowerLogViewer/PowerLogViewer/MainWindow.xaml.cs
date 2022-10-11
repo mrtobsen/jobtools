@@ -35,6 +35,8 @@ namespace PowerLogViewer
 			}
 			_AppCache = new ApplicationCacheController( tempList );
 			dgLogentries.ItemsSource = _AppCache.FullLogEntryList;
+			btDoSearch.IsEnabled = true;
+			btReset.IsEnabled = true;
 		}
 
 		// Opens file dialog when needed for Import (no implementation of Winforms into class)
