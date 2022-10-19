@@ -4,12 +4,35 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"      
         xmlns:local="clr-namespace:PowerLogViewer"
-        xmlns:conv="clr-namespace:PowerLogViewer.Converters"
+        xmlns:conv="clr-namespace:PowerLogViewer.Converters" 
+        xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
         mc:Ignorable="d"
         FontFamily="Consolas"
         Title="PowerLogViewer by Tobi :-)" Height="1080" Width="1920">
     <Window.Resources>
         <conv:RemoveNewLineConverter x:Key="removeNewLineConverter" />
+
+        <!--https://nicksnettravels.builttoroam.com/xaml-basics-treeview/-->
+        <CollectionViewSource x:Key="cvs" Source="{Binding Path=BookmarkList}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Group"/>
+            </CollectionViewSource.GroupDescriptions>
+            <CollectionViewSource.SortDescriptions>
+                <scm:SortDescription PropertyName="LogEntryObject.TimeStamp" Direction="Ascending"/>
+            </CollectionViewSource.SortDescriptions>
+        </CollectionViewSource>
+
+        <DataTemplate x:Key="trvwTemplate">
+            <TextBlock Text="{Binding Path=Title}" />
+        </DataTemplate>
+
+        <HierarchicalDataTemplate x:Key="catTemplate" ItemsSource="{Binding Items}" ItemTemplate="{StaticResource trvwTemplate}" >
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Path=Name}" FontWeight="Bold"/>
+                <TextBlock Text="{Binding Path=ItemCount,StringFormat=' ({0})'}" FontWeight="Bold"/>
+            </StackPanel>
+        </HierarchicalDataTemplate>
+
     </Window.Resources>
 
     <Grid>
@@ -25,6 +48,7 @@
                 <MenuItem x:Name="miImportFile" Header="Import..." Click="miImportFile_Click" />
                 <MenuItem Header="Open Session..."/>
                 <MenuItem Header="Save Session as..."/>
+                <MenuItem Header="Add Bookmark" Click="AddBookmark_Click"/>
             </MenuItem>
 
         </Menu>
@@ -33,69 +57,75 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="100"/>
-                        
+
             </Grid.ColumnDefinitions>
             <TextBox Grid.Column="0" x:Name="txtSearch"  AcceptsReturn="True" />
             <StackPanel Grid.Column="1" Orientation="Vertical">
                 <Button Margin="2" x:Name="btDoSearch" Content="Search" Click="btDoSearch_Click" IsEnabled="False" />
                 <Button Margin="2" x:Name="btReset" Content="Reset" Click="btResetSearch_Click" IsEnabled="False" />
             </StackPanel>
-         
+
         </Grid>
 
         <GridSplitter Grid.Row="2" ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" HorizontalAlignment="Stretch"  />
 
-        <DataGrid Grid.Row="3" x:Name="dgLogentries"  CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" AutoGenerateColumns="False">
-            <DataGrid.Resources>
-                <Style x:Key="ReadOnlyEditStyle" TargetType="TextBox">
-                    <Setter Property="IsReadOnly"  Value="true"/>
-                </Style>
-                <Style TargetType="DataGridColumnHeader">
-                    <EventSetter Event="MouseRightButtonDown"  Handler="DataGridColumnHeader_MouseRightButtonDown" />
-                </Style>
-            </DataGrid.Resources>
-            
-            <DataGrid.RowDetailsTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal" >
-                        <StackPanel>
-                            <TextBlock Text="Message" FontWeight="Bold"  Margin="0,9,0,0"  />
-                            <Separator/>
-                            <TextBox Text="{Binding Message, Mode=OneWay}" Background="Transparent"  TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                            <TextBlock Text="Attributes" FontWeight="Bold"  Margin="0,9,0,0"  />
-                            <Separator/>
-                            <TextBox Text="{Binding Attributes, Mode=OneWay}" Background="Transparent"  TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
-                        </StackPanel>
-                    </StackPanel>
-                </DataTemplate>
-            </DataGrid.RowDetailsTemplate>
-            
-            <DataGrid.Columns>
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding RunNumber}" Header="#" Width="10" />
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}"  Binding="{Binding Level}" Header="Level" Width="40">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Style.Triggers>
-                                <Trigger Property="Text" Value="error">
-                                    <Setter Property="Background" Value="Red"/>
-                                </Trigger>
-                                <Trigger Property="Text" Value="warning">
-                                    <Setter Property="Background" Value="Yellow"/>
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                </DataGridTextColumn>
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Category}" Header="Category" Width="35"/>
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Component}" Header="Component" Width="35" />
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding TimeStamp, StringFormat=\{0:dd.MM.yy HH:mm:ss.fff\}}" Header="TimeStamp" Width="145" />
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding ProcessThread}" Header="ProcessThread" Width="80" />
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Session}" Header="Session" Width="35" />
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Message}" Header="Message" Width="*" />
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Attributes, Converter={StaticResource removeNewLineConverter}}" Header="Attributes" Width="700" />
-                <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding FileName}" Header="Filename" Width="85" Visibility="Hidden" />
-            </DataGrid.Columns>
-        </DataGrid>
+        <DockPanel Grid.Row="3" >
+            <Expander DockPanel.Dock="Bottom" Header="Bookmarks">
+                <TreeView x:Name="trvwBookmarks" SelectedItemChanged="trvwBookmarks_SelectedItemChanged"  ItemsSource="{Binding Source={StaticResource cvs}, Path=Groups}" ItemTemplate="{StaticResource catTemplate}"  />
+            </Expander>
 
+            <DataGrid x:Name="dgLogentries" SelectionUnit="CellOrRowHeader" RowHeaderWidth="20" CanUserResizeRows="False" CanUserAddRows="False" CanUserDeleteRows="False" CanUserSortColumns="False" AutoGenerateColumns="False">
+                <DataGrid.Resources>
+                    <Style x:Key="ReadOnlyEditStyle" TargetType="TextBox">
+                        <Setter Property="IsReadOnly"  Value="true"/>
+                    </Style>
+                    <Style TargetType="DataGridColumnHeader">
+                        <EventSetter Event="MouseRightButtonDown"  Handler="DataGridColumnHeader_MouseRightButtonDown" />
+                    </Style>
+                </DataGrid.Resources>
+
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" >
+                            <StackPanel>
+                                <TextBlock Text="Message" FontWeight="Bold"  Margin="0,9,0,0"  />
+                                <Separator/>
+                                <TextBox Text="{Binding Message, Mode=OneWay}" Background="Transparent"  TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                                <TextBlock Text="Attributes" FontWeight="Bold"  Margin="0,9,0,0"  />
+                                <Separator/>
+                                <TextBox Text="{Binding Attributes, Mode=OneWay}" Background="Transparent"  TextWrapping="Wrap" IsReadOnly="True" BorderThickness="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+                            </StackPanel>
+                        </StackPanel>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding RunNumber}" Header="#" Width="10" />
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}"  Binding="{Binding Level}" Header="Level" Width="40">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Style.Triggers>
+                                    <Trigger Property="Text" Value="error">
+                                        <Setter Property="Background" Value="Red"/>
+                                    </Trigger>
+                                    <Trigger Property="Text" Value="warning">
+                                        <Setter Property="Background" Value="Yellow"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Category}" Header="Category" Width="35"/>
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Component}" Header="Component" Width="35" />
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding TimeStamp, StringFormat=\{0:dd.MM.yy HH:mm:ss.fff\}}" Header="TimeStamp" Width="145" />
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding ProcessThread, Mode=OneWay}" Header="ProcessThread" Width="80" />
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Session}" Header="Session" Width="35" />
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Message}" Header="Message" Width="*" />
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Attributes, Converter={StaticResource removeNewLineConverter}}" Header="Attributes" Width="700" />
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding FileName}" Header="Filename" Width="85" Visibility="Hidden" />
+                    <DataGridTextColumn EditingElementStyle="{StaticResource ReadOnlyEditStyle}" Binding="{Binding Hash}" Header="Hash" Width="85" Visibility="Hidden" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
     </Grid>
 </Window>

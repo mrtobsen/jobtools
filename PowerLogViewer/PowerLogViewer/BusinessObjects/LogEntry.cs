@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PowerLogViewer.BusinessObjects
 {
@@ -21,7 +23,21 @@ namespace PowerLogViewer.BusinessObjects
 		public string Attributes { get; set; }
 		public int RunNumber { get; set; }
 		public string FileName { get; set; }
-
+		public string Hash
+		{
+			get
+			{
+				// Use input string to calculate MD5 hash
+				using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create())
+				{
+					string input = String.Concat(TimeStamp.Ticks.ToString(),ProcessThread,Message,Attributes);
+					byte[] inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+					byte[] hashBytes = md5.ComputeHash(inputBytes);
+				
+					return BitConverter.ToString( hashBytes ); 		
+				}
+			}
+		}
 		public LogEntry()
 		{
 			RunNumber = 0;
