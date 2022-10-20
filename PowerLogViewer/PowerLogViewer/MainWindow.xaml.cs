@@ -117,7 +117,7 @@ namespace PowerLogViewer
 			if (dgLogentries.CurrentItem != null)
 			{
 				var currentItem = (LogEntry)dgLogentries.CurrentItem;
-				_AppCache.AddBookmark( currentItem.Hash, currentItem.TimeStamp.ToString() + ": " + currentItem.Message.Replace( Environment.NewLine, " " ), currentItem.Message, "User" );
+				_AppCache.AddBookmark( currentItem.Hash, currentItem.TimeStamp.ToString( "dd.MM.yyyy hh:mm:ss.fff" ) + ": " + currentItem.Message.Replace( Environment.NewLine, " " ), currentItem.Message, "User" );
 			}
 		}
 
@@ -129,6 +129,21 @@ namespace PowerLogViewer
 			dgLogentries.UpdateLayout();
 		}
 
+		private void JumpToLogEntryItem(LogEntry logEntryToSelect)
+		{			
+			dgLogentries.SelectedItem = logEntryToSelect;
+			var selectedItem = (LogEntry)dgLogentries.SelectedItem;
+			
+			// Selection was succesfull
+			if (selectedItem.Hash == logEntryToSelect.Hash)
+			{
+				dgLogentries.ScrollIntoView( logEntryToSelect );
+				dgLogentries.UpdateLayout();
+				return;
+			}
+			MessageBox.Show("Bookmarekd entry is currently not visible due to current filter conditions.","Entry not selectable", MessageBoxButton.OK, MessageBoxImage.Warning);
+
+		}
 		private void trvwBookmarks_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
 		{
 			var treeView = (TreeView) sender;
@@ -137,7 +152,7 @@ namespace PowerLogViewer
 				var bookmark =(Bookmark) treeView.SelectedItem;
 				if (bookmark != null)
 				{
-					JumpToHash( bookmark.Hash );
+					JumpToLogEntryItem( bookmark.LogEntryObject );
 				}
 			}
 		}
